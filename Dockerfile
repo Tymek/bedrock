@@ -1,5 +1,5 @@
 ##
-# @see: https://github.com/docker-library/wordpress/blob/8215003254de4bf0a8ddd717c3c393e778b872ce/php7.4/apache/Dockerfile
+# @see: https://github.com/docker-library/wordpress/blob/6e29f5aa794cfa3b5cae30dacab50228b7d659a4/php7.4/apache/Dockerfile
 
 FROM php:7.4-apache
 
@@ -32,7 +32,6 @@ RUN set -ex; \
 		exif \
 		gd \
 		mysqli \
-		opcache \
 		zip \
 	; \
 	pecl install imagick-3.4.4; \
@@ -54,7 +53,9 @@ RUN set -ex; \
 
 # set recommended PHP.ini settings
 # see https://secure.php.net/manual/en/opcache.installation.php
-RUN { \
+RUN set -eux; \
+	docker-php-ext-enable opcache; \
+	{ \
 		echo 'opcache.memory_consumption=128'; \
 		echo 'opcache.interned_strings_buffer=8'; \
 		echo 'opcache.max_accelerated_files=4000'; \
