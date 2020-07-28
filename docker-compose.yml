@@ -1,0 +1,76 @@
+version: '3.1'
+
+services:
+
+  webserver:
+    image: scrlk/bedrock
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    volumes:
+      - ./:/srv
+    working_dir: /srv
+    environment:
+      WP_ENV: "${WP_ENV:-development}"
+
+  sql:
+    image: mariadb:10
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: "${DB_NAME:-database}"
+      MYSQL_USER: "${DB_USER:-user}"
+      MYSQL_PASSWORD: "${DB_PASSWORD:-password}"
+      MYSQL_RANDOM_ROOT_PASSWORD: '1'
+    volumes:
+      - ./.data:/var/lib/mysql
+
+  install:
+    image: composer:1
+    restart: "no"
+    working_dir: /srv
+    volumes:
+      - ./:/srv
+    command: bash -c "composer install"
+    # && cd web/app/themes/yourTheme
+    # && composer install"
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - "8092:80"
+    depends_on:
+      - sql
+    environment:
+      PMA_HOST: sql
+      PMA_USER: "${DB_USER:-user}"
+      PMA_PASSWORD: "${DB_PASSWORD:-password}"
+      # MYSQL_ROOT_PASSWORD: "${DB_PASSWORD:-password}"
+
+  mailcatcher:
+    image: schickling/mailcatcher
+    ports:
+      - "1025:1025"
+      - "1080:1080"
+
+  # test:
+  #   image: umutphp/php-docker-images-for-ci:7.3
+  #   restart: "no"
+  #   working_dir: /srv
+  #   volumes:
+  #     - ./:/srv
+    # command: phpmetrics .
+    # command: psecio-parse scan -n -vv .
+    # command: phpcs -v .
+    # command: phpcpd .
+    # command: var-dump-check .
+
+  # webpack:
+  #   image: node:12
+  #   restart: unless-stopped
+  #   working_dir: /srv
+  #   ports:
+  #     - "3000:3000"
+  #     - "3001:3001"
+  #   volumes:
+  #     - ./web/app/themes/yourTheme:/srv
+  #   command: bash -c "yarn && yarn build && yarn start"
