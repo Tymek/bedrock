@@ -1,7 +1,7 @@
 ##
 # @see: https://github.com/docker-library/wordpress/blob/6e29f5aa794cfa3b5cae30dacab50228b7d659a4/php7.4/apache/Dockerfile
 
-FROM php:7.4-apache
+FROM php:8.0-apache
 
 # persistent dependencies
 RUN set -eux; \
