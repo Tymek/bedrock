@@ -25,7 +25,7 @@ services:
       - ./.data:/var/lib/mysql
 
   install:
-    image: composer:1
+    image: composer:2
     restart: "no"
     working_dir: /srv
     volumes:
